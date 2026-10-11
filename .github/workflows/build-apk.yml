@@ -1,4 +1,3 @@
-
 name: Build APK
 on: [push]
 jobs:
@@ -11,18 +10,18 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
       - name: Unzip project
         run: |
-          ls
-          unzip -o *.zip -d app_src
-          ls -R app_src | head -n 200
+          unzip -o "*.zip" -d app_src
+          ls -R app_src | head -n 150
       - name: Make gradlew executable
-        run: |
-          find app_src -name gradlew -exec chmod +x {} \;
+        run: find app_src -name gradlew -exec chmod +x {} \;
       - name: Build APK
         run: |
-          GRADLE_DIR=$(find app_src -name "gradlew" | head -n 1 | xargs dirname)
-          echo "Gradle dir $GRADLE_DIR"
+          GRADLE_DIR=$(find app_src -name gradlew | head -n 1 | xargs dirname)
+          echo "Building in $GRADLE_DIR"
           cd "$GRADLE_DIR"
          ./gradlew assembleDebug
       - name: Upload APK
