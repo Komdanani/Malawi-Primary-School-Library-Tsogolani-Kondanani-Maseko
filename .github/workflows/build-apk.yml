@@ -8,21 +8,21 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
-      - name: Setup Android
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v3
       - name: Unzip
         run: |
           unzip -o *.zip -d src
-          ls src
+          ls -R src | head -n 100
       - name: Build
         run: |
           chmod +x $(find src -name gradlew)
           DIR=$(find src -name gradlew | head -n 1 | xargs dirname)
           cd $DIR
          ./gradlew assembleDebug
-      - name: Upload
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: Tsogolani-APK
