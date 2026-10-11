@@ -5,27 +5,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Java 17
+      - name: Setup Java
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
-          java-version: 17
-      - name: Setup Android SDK
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Setup Android
         uses: android-actions/setup-android@v3
-      - name: Unzip project
+      - name: Unzip
         run: |
-          unzip -o "*.zip" -d app_src
-          ls -R app_src | head -n 150
-      - name: Make gradlew executable
-        run: find app_src -name gradlew -exec chmod +x {} \;
-      - name: Build APK
+          unzip -o *.zip -d src
+          ls src
+      - name: Build
         run: |
-          GRADLE_DIR=$(find app_src -name gradlew | head -n 1 | xargs dirname)
-          echo "Building in $GRADLE_DIR"
-          cd "$GRADLE_DIR"
+          chmod +x $(find src -name gradlew)
+          DIR=$(find src -name gradlew | head -n 1 | xargs dirname)
+          cd $DIR
          ./gradlew assembleDebug
-      - name: Upload APK
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: Tsogolani-Library-APK
-          path: "**/build/outputs/apk/debug/*.apk"
+          name: Tsogolani-APK
+          path: '**/build/outputs/apk/debug/*.apk'
