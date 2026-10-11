@@ -1,3 +1,4 @@
+
 name: Build APK
 on: [push]
 jobs:
@@ -10,14 +11,22 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Unzip
+      - name: Unzip project
         run: |
-          unzip -o *.zip -d src
-          ls src
+          ls -lh
+          ZIP=$(ls *.zip | head -n 1)
+          echo "Found $ZIP"
+          rm -rf src extracted
+          unzip -o "$ZIP" -d extracted
+          ls -R extracted | head -n 100
       - name: Build APK
         run: |
-          chmod +x $(find src -name gradlew)
-          find src -name gradlew -execdir./gradlew assembleDebug --stacktrace \;
+          GRADLEW=$(find extracted -name gradlew -type f | head -n 1)
+          echo "Found gradlew at $GRADLEW"
+          chmod +x "$GRADLEW"
+          DIR=$(dirname "$GRADLEW")
+          cd "$DIR"
+         ./gradlew assembleDebug --stacktrace
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
