@@ -1,1 +1,33 @@
-.github/workflows/build-apk.yml
+name: Build APK
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Unzip project
+        run: |
+          unzip -o "Tsogolani_GitHub_APK_Builder.zip" -d app_src || unzip -o *.zip -d app_src
+          ls app_src
+      - name: Build with Gradle
+        run: |
+          cd app_src
+          find. -name "gradlew" -exec chmod +x {} \;
+          GRADLE=$(find. -name "gradlew" | head -n 1)
+          if [ -z "$GRADLE" ]; then
+            echo "No gradlew found, trying gradle build"
+            cd $(find. -name "build.gradle*" | head -n 1 | xargs dirname)
+          else
+            cd $(dirname "$GRADLE")
+          fi
+         ./gradlew assembleDebug || gradle assembleDebug ||../gradlew assembleDebug
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tsogolani-Library-APK
+          path: "**/app/build/outputs/apk/debug/*.apk"
