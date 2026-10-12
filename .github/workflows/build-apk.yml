@@ -9,15 +9,11 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Unzip
-        run: unzip -o *.zip -d project
-      - name: Build
-        run: |
-          chmod +x project/gradlew
-          cd project
-         ./gradlew assembleDebug
-      - name: Upload
-        uses: actions/upload-artifact@v4
+      - run: unzip -o *.zip -d project
+      - run: ls project
+      - run: chmod +x project/gradlew
+      - run: sh project/gradlew -p project assembleDebug
+      - uses: actions/upload-artifact@v4
         with:
           name: Tsogolani-APK
-          path: project/app/build/outputs/apk/debug/app-debug.apk'
+          path: project/app/build/outputs/apk/debug/app-debug.apk
