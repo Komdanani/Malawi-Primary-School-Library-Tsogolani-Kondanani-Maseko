@@ -1,0 +1,29 @@
+name: Build APK
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.4
+      - name: Create Project
+        shell: python
+        run: |
+          import pathlib, shutil, glob, base64 as b64
+          p1="project/app/src/main/java/com/maseko/tsogolani"
+          p2="project/app/src/main/res/values"
+          p3="project/app/src/main/assets"
+          pathlib.Path(p1).mkdir(parents=True, exist_ok=True)
+          pathlib.Path(p2).mkdir(parents=True, exist_ok=True)
+          pathlib.Path(p3).mkdir(parents=True, exist_ok=True)
+          open("project/settings.gradle","wb").write(b64.b64decode("cm9vdFByb2plY3QubmFtZSA9ICJUc29nb2xhbmkiCmluY2x1ZGUgIjphcHAiCg=="))
+          open("project/build.gradle","wb").write(b64.b64decode("cGx1Z2lucyB7IGlkICJjb20uYW5kcm9pZC5hcHBsaWNhdGlvbiIgdmVyc2lvbiAiOC4xLjQiIGFwcGx5IGZhbHNlIH0K"))
+          open("project/app/build.gradle","wb").write(b64.b64decode("cGx1Z2lucyB7IGlkICJjb20uYW5kcm9pZC5hcHBsaWNhdGlvbiIgfQphbmRyb2lkIHsKIG5hbWVzcGFjZSAiY29tLm1hc2Vrby50c29nb2xhbmkiCiBjb21waWxlU2RrIDM0CiBkZWZhdWx0Q29uZmlnIHsKICBhcHBsaWNhdGlvbklkICJjb20ubWFzZWtvLnRzb2dvbGFuaSIKICBtaW5TZGsgMjEKICB0YXJnZXRTZGsgMzQKICB2ZXJzaW9uQ29kZSAxNgogIHZlcnNpb25OYW1lICIxLjAuMTYiCiB9Cn0KZGVwZW5kZW5jaWVzIHsKIGltcGxlbWVudGF0aW9uICJhbmRyb2lkeC5hcHBjb21wYXQ6YXBwY29tcGF0OjEuNi4xIgp9Cg=="))
+          open("project/app/src/main/AndroidManifest.xml","wb").write(b64.b64decode("PG1hbmlmZXN0IHhtbG5zOmFuZHJvaWQ9Imh0dHA6Ly9zY2hlbWFzLmFuZHJvaWQuY29tL2Fway9yZXMvYW5kcm9pZCI+PGFwcGxpY2F0aW9uIGFuZHJvaWQ6bGFiZWw9IlRzb2dvbGFuaSI+PGFjdGl2aXR5IGFuZHJvaWQ6bmFtZT0iLk1haW5BY3Rpdml0eSIgYW5kcm9pZDpleHBvcnRlZD0idHJ1ZSI+PGludGVudC1maWx0ZXI+PGFjdGlvbiBhbmRyb2lkOm5hbWU9ImFuZHJvaWQuaW50ZW50LmFjdGlvbi5NQUlOIi8+PGNhdGVnb3J5IGFuZHJvaWQ6bmFtZT0iYW5kcm9pZC5pbnRlbnQuY2F0ZWdvcnkuTEFVTkNIRVIiLz48L2ludGVudC1maWx0ZXI+PC9hY3Rpdml0eT48L2FwcGxpY2F0aW9uPjwvbWFuaWZlc3Q+"))
+          open("project/app/src/main/res/values/strings.xml","wb").write(b64.b64decode("PHJlc291cmNlcz48c3RyaW5nIG5hbWU9ImFwcF9uYW1lIj5Uc29nb2xhbmkgTGlicmFye
