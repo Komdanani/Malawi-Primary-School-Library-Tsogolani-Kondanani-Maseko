@@ -14,26 +14,18 @@ jobs:
           gradle-version: 8.4
       - name: Create Project
         run: |
-          python3 << 'PY'
-          import os, glob, pathlib
-          os.system('rm -rf project')
-          pathlib.Path('project/app/src/main/java/com/maseko/tsogolani').mkdir(parents=True, exist_ok=True)
-          pathlib.Path('project/app/src/main/res/values').mkdir(parents=True, exist_ok=True)
-          pathlib.Path('project/app/src/main/assets').mkdir(parents=True, exist_ok=True)
-          open('project/settings.gradle','w').write('rootProject.name = "Tsogolani"\ninclude ":app"\n')
-          open('project/build.gradle','w').write('plugins { id "com.android.application" version "8.1.4" apply false }\n')
-          open('project/app/build.gradle','w').write('plugins { id "com.android.application" }\nandroid { namespace "com.maseko.tsogolani"\n compileSdk 34\n defaultConfig { applicationId "com.maseko.tsogolani"\n minSdk 21\n targetSdk 34\n versionCode 16\n versionName "1.0.16" } }\ndependencies { implementation "androidx.appcompat:appcompat:1.6.1" }\n')
-          open('project/app/src/main/AndroidManifest.xml','w').write('<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application android:label="Tsogolani Library"><activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>')
-          open('project/app/src/main/res/values/strings.xml','w').write('<resources><string name="app_name">Tsogolani Library</string></resources>')
-          htmls=glob.glob('*.html')
-          print('HTML found:', htmls)
-          if htmls:
-              import shutil
-              shutil.copy(htmls[0], 'project/app/src/main/assets/library.html')
-              for h in htmls:
-                  shutil.copy(h, 'project/app/src/main/assets/')
-          open('project/app/src/main/java/com/maseko/tsogolani/MainActivity.kt','w').write('package com.maseko.tsogolani\nimport android.app.Activity\nimport android.os.Bundle\nimport android.webkit.WebView\nclass MainActivity : Activity() {\n override fun onCreate(b: Bundle?) {\n super.onCreate(b)\n val w=WebView(this)\n w.settings.javaScriptEnabled=true\n w.loadUrl("file:///android_asset/library.html")\n setContentView(w)\n }\n}\n')
-          PY
+          rm -rf project
+          mkdir -p project/app/src/main/java/com/maseko/tsogolani
+          mkdir -p project/app/src/main/res/values
+          mkdir -p project/app/src/main/assets
+          echo cm9vdFByb2plY3QubmFtZSA9ICJUc29nb2xhbmkiCmluY2x1ZGUgIjphcHAiCg== | base64 -d > project/settings.gradle
+          echo cGx1Z2lucyB7IGlkICJjb20uYW5kcm9pZC5hcHBsaWNhdGlvbiIgdmVyc2lvbiAiOC4xLjQiIGFwcGx5IGZhbHNlIH0K | base64 -d > project/build.gradle
+          echo cGx1Z2lucyB7IGlkICJjb20uYW5kcm9pZC5hcHBsaWNhdGlvbiIgfQphbmRyb2lkIHsKIG5hbWVzcGFjZSAiY29tLm1hc2Vrby50c29nb2xhbmkiCiBjb21waWxlU2RrIDM0CiBkZWZhdWx0Q29uZmlnIHsKICBhcHBsaWNhdGlvbklkICJjb20ubWFzZWtvLnRzb2dvbGFuaSIKICBtaW5TZGsgMjEKICB0YXJnZXRTZGsgMzQKICB2ZXJzaW9uQ29kZSAxNgogIHZlcnNpb25OYW1lICIxLjAuMTYiCiB9Cn0KZGVwZW5kZW5jaWVzIHsKIGltcGxlbWVudGF0aW9uICJhbmRyb2lkeC5hcHBjb21wYXQ6YXBwY29tcGF0OjEuNi4xIgp9Cg== | base64 -d > project/app/build.gradle
+          echo PG1hbmlmZXN0IHhtbG5zOmFuZHJvaWQ9Imh0dHA6Ly9zY2hlbWFzLmFuZHJvaWQuY29tL2Fway9yZXMvYW5kcm9pZCI+PGFwcGxpY2F0aW9uIGFuZHJvaWQ6bGFiZWw9IlRzb2dvbGFuaSBMaWJyYXJ5Ij48YWN0aXZpdHkgYW5kcm9pZDpuYW1lPSIuTWFpbkFjdGl2aXR5IiBhbmRyb2lkOmV4cG9ydGVkPSJ0cnVlIj48aW50ZW50LWZpbHRlcj48YWN0aW9uIGFuZHJvaWQ6bmFtZT0iYW5kcm9pZC5pbnRlbnQuYWN0aW9uLk1BSU4iLz48Y2F0ZWdvcnkgYW5kcm9pZDpuYW1lPSJhbmRyb2lkLmludGVudC5jYXRlZ29yeS5MQVVOQ0hFUiIvPjwvaW50ZW50LWZpbHRlcj48L2FjdGl2aXR5PjwvYXBwbGljYXRpb24+PC9tYW5pZmVzdD4= | base64 -d > project/app/src/main/AndroidManifest.xml
+          echo PHJlc291cmNlcz48c3RyaW5nIG5hbWU9ImFwcF9uYW1lIj5Uc29nb2xhbmkgTGlicmFyeTwvc3RyaW5nPjwvcmVzb3VyY2VzPg== | base64 -d > project/app/src/main/res/values/strings.xml
+          echo cGFja2FnZSBjb20ubWFzZWtvLnRzb2dvbGFuaQppbXBvcnQgYW5kcm9pZC5hcHAuQWN0aXZpdHkKaW1wb3J0IGFuZHJvaWQub3MuQnVuZGxlCmltcG9ydCBhbmRyb2lkLndlYmtpdC5XZWJWaWV3CmNsYXNzIE1haW5BY3Rpdml0eSA6IEFjdGl2aXR5KCkgewogb3ZlcnJpZGUgZnVuIG9uQ3JlYXRlKGI6IEJ1bmRsZT8pIHsKICBzdXBlci5vbkNyZWF0ZShiKQogIHZhbCB3PVdlYlZpZXcodGhpcykKICB3LnNldHRpbmdzLmphdmFTY3JpcHRFbmFibGVkPXRydWUKICB3LmxvYWRVcmwoImZpbGU6Ly8vYW5kcm9pZF9hc3NldC9saWJyYXJ5Lmh0bWwiKQogIHNldENvbnRlbnRWaWV3KHcpCiB9Cn0K | base64 -d > project/app/src/main/java/com/maseko/tsogolani/MainActivity.kt
+          cp *.html project/app/src/main/assets/library.html
+          ls project/app/src/main/assets/
       - name: Build APK
         run: |
           cd project
