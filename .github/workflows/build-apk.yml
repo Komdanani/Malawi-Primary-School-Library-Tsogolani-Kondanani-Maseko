@@ -14,22 +14,26 @@ jobs:
           gradle-version: 8.4
       - name: Create Project
         run: |
-          rm -rf project
-          mkdir -p project/app/src/main/java/com/maseko/tsogolani
-          mkdir -p project/app/src/main/res/values
-          mkdir -p project/app/src/main/assets
-          echo 'rootProject.name = "Tsogolani"' > project/settings.gradle
-          echo "include ':app'" >> project/settings.gradle
-          echo "plugins { id 'com.android.application' version '8.1.4' apply false }" > project/build.gradle
-          echo "plugins { id 'com.android.application' }" > project/app/build.gradle
-          echo "android { namespace 'com.maseko.tsogolani'; compileSdk 34; defaultConfig { applicationId \"com.maseko.tsogolani\"; minSdk 21; targetSdk 34; versionCode 16; versionName \"1.0.16\" }; buildTypes { release { minifyEnabled false } }; compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 } } dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' }" >> project/app/build.gradle
-          echo '<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application android:label="Tsogolani Library" android:theme="@android:style/Theme.NoTitleBar"><activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>' > project/app/src/main/AndroidManifest.xml
-          echo '<resources><string name="app_name">Tsogolani Library</string></resources>' > project/app/src/main/res/values/strings.xml
-          HTML=$(ls *.html | head -n 1)
-          cp "$HTML" project/app/src/main/assets/library.html
-          cp *.html project/app/src/main/assets/ || true
-          mkdir -p project/app/src/main/java/com/maseko/tsogolani
-          printf 'package com.maseko.tsogolani\nimport android.app.Activity\nimport android.os.Bundle\nimport android.webkit.WebView\nclass MainActivity : Activity() {\n override fun onCreate(b: Bundle?) {\n super.onCreate(b)\n val w = WebView(this)\n w.settings.javaScriptEnabled = true\n w.loadUrl("file:///android_asset/library.html")\n setContentView(w)\n }\n}\n' > project/app/src/main/java/com/maseko/tsogolani/MainActivity.kt
+          python3 << 'PY'
+          import os, glob, pathlib
+          os.system('rm -rf project')
+          pathlib.Path('project/app/src/main/java/com/maseko/tsogolani').mkdir(parents=True, exist_ok=True)
+          pathlib.Path('project/app/src/main/res/values').mkdir(parents=True, exist_ok=True)
+          pathlib.Path('project/app/src/main/assets').mkdir(parents=True, exist_ok=True)
+          open('project/settings.gradle','w').write('rootProject.name = "Tsogolani"\ninclude ":app"\n')
+          open('project/build.gradle','w').write('plugins { id "com.android.application" version "8.1.4" apply false }\n')
+          open('project/app/build.gradle','w').write('plugins { id "com.android.application" }\nandroid { namespace "com.maseko.tsogolani"\n compileSdk 34\n defaultConfig { applicationId "com.maseko.tsogolani"\n minSdk 21\n targetSdk 34\n versionCode 16\n versionName "1.0.16" } }\ndependencies { implementation "androidx.appcompat:appcompat:1.6.1" }\n')
+          open('project/app/src/main/AndroidManifest.xml','w').write('<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application android:label="Tsogolani Library"><activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>')
+          open('project/app/src/main/res/values/strings.xml','w').write('<resources><string name="app_name">Tsogolani Library</string></resources>')
+          htmls=glob.glob('*.html')
+          print('HTML found:', htmls)
+          if htmls:
+              import shutil
+              shutil.copy(htmls[0], 'project/app/src/main/assets/library.html')
+              for h in htmls:
+                  shutil.copy(h, 'project/app/src/main/assets/')
+          open('project/app/src/main/java/com/maseko/tsogolani/MainActivity.kt','w').write('package com.maseko.tsogolani\nimport android.app.Activity\nimport android.os.Bundle\nimport android.webkit.WebView\nclass MainActivity : Activity() {\n override fun onCreate(b: Bundle?) {\n super.onCreate(b)\n val w=WebView(this)\n w.settings.javaScriptEnabled=true\n w.loadUrl("file:///android_asset/library.html")\n setContentView(w)\n }\n}\n')
+          PY
       - name: Build APK
         run: |
           cd project
