@@ -26,4 +26,18 @@ jobs:
           open("project/build.gradle","wb").write(b64.b64decode("cGx1Z2lucyB7IGlkICJjb20uYW5kcm9pZC5hcHBsaWNhdGlvbiIgdmVyc2lvbiAiOC4xLjQiIGFwcGx5IGZhbHNlIH0K"))
           open("project/app/build.gradle","wb").write(b64.b64decode("cGx1Z2lucyB7IGlkICJjb20uYW5kcm9pZC5hcHBsaWNhdGlvbiIgfQphbmRyb2lkIHsKIG5hbWVzcGFjZSAiY29tLm1hc2Vrby50c29nb2xhbmkiCiBjb21waWxlU2RrIDM0CiBkZWZhdWx0Q29uZmlnIHsKICBhcHBsaWNhdGlvbklkICJjb20ubWFzZWtvLnRzb2dvbGFuaSIKICBtaW5TZGsgMjEKICB0YXJnZXRTZGsgMzQKICB2ZXJzaW9uQ29kZSAxNgogIHZlcnNpb25OYW1lICIxLjAuMTYiCiB9Cn0KZGVwZW5kZW5jaWVzIHsKIGltcGxlbWVudGF0aW9uICJhbmRyb2lkeC5hcHBjb21wYXQ6YXBwY29tcGF0OjEuNi4xIgp9Cg=="))
           open("project/app/src/main/AndroidManifest.xml","wb").write(b64.b64decode("PG1hbmlmZXN0IHhtbG5zOmFuZHJvaWQ9Imh0dHA6Ly9zY2hlbWFzLmFuZHJvaWQuY29tL2Fway9yZXMvYW5kcm9pZCI+PGFwcGxpY2F0aW9uIGFuZHJvaWQ6bGFiZWw9IlRzb2dvbGFuaSI+PGFjdGl2aXR5IGFuZHJvaWQ6bmFtZT0iLk1haW5BY3Rpdml0eSIgYW5kcm9pZDpleHBvcnRlZD0idHJ1ZSI+PGludGVudC1maWx0ZXI+PGFjdGlvbiBhbmRyb2lkOm5hbWU9ImFuZHJvaWQuaW50ZW50LmFjdGlvbi5NQUlOIi8+PGNhdGVnb3J5IGFuZHJvaWQ6bmFtZT0iYW5kcm9pZC5pbnRlbnQuY2F0ZWdvcnkuTEFVTkNIRVIiLz48L2ludGVudC1maWx0ZXI+PC9hY3Rpdml0eT48L2FwcGxpY2F0aW9uPjwvbWFuaWZlc3Q+"))
-          open("project/app/src/main/res/values/strings.xml","wb").write(b64.b64decode("PHJlc291cmNlcz48c3RyaW5nIG5hbWU9ImFwcF9uYW1lIj5Uc29nb2xhbmkgTGlicmFye
+          open("project/app/src/main/res/values/strings.xml","wb").write(b64.b64decode("PHJlc291cmNlcz48c3RyaW5nIG5hbWU9ImFwcF9uYW1lIj5Uc29nb2xhbmkgTGlicmFyeTwvc3RyaW5nPjwvcmVzb3VyY2VzPg=="))
+          open("project/app/src/main/java/com/maseko/tsogolani/MainActivity.kt","wb").write(b64.b64decode("cGFja2FnZSBjb20ubWFzZWtvLnRzb2dvbGFuaQppbXBvcnQgYW5kcm9pZC5hcHAuQWN0aXZpdHkKaW1wb3J0IGFuZHJvaWQub3MuQnVuZGxlCmltcG9ydCBhbmRyb2lkLndlYmtpdC5XZWJWaWV3CmNsYXNzIE1haW5BY3Rpdml0eSA6IEFjdGl2aXR5KCkgewogb3ZlcnJpZGUgZnVuIG9uQ3JlYXRlKGI6IEJ1bmRsZT8pIHsKICBzdXBlci5vbkNyZWF0ZShiKQogIHZhbCB3PVdlYlZpZXcodGhpcykKICB3LnNldHRpbmdzLmphdmFTY3JpcHRFbmFibGVkPXRydWUKICB3LmxvYWRVcmwoImZpbGU6Ly8vYW5kcm9pZF9hc3NldC9saWJyYXJ5Lmh0bWwiKQogIHNldENvbnRlbnRWaWV3KHcpCiB9Cn0K"))
+          htmls=glob.glob("*.html")
+          shutil.copy(htmls[0],"project/app/src/main/assets/library.html")
+      - name: Build APK
+        run: |
+          cd project
+          gradle wrapper
+          chmod +x gradlew
+         ./gradlew assembleDebug
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tsogolani-APK
+          path: project/app/build/outputs/apk/debug/app-debug.apk
