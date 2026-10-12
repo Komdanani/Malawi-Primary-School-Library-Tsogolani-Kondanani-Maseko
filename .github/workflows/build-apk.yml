@@ -10,19 +10,14 @@ jobs:
           distribution: temurin
           java-version: '17'
       - name: Unzip
+        run: unzip -o *.zip -d project
+      - name: Build
         run: |
-          ZIP=$(ls *.zip | head -n 1)
-          unzip -o "$ZIP" -d app
-          ls -R app | head -n 150
-      - name: Build Debug APK
-        run: |
-          FILE=$(find app -name gradlew -type f | head -n 1)
-          echo "Gradlew: $FILE"
-          chmod +x "$FILE"
-          cd $(dirname "$FILE")
+          chmod +x project/gradlew
+          cd project
          ./gradlew assembleDebug
-      - name: Upload APK
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
-          name: Tsogolani-Library-APK
-          path: '**/outputs/apk/debug/*.apk'
+          name: Tsogolani-APK
+          path: project/app/build/outputs/apk/debug/app-debug.apk'
