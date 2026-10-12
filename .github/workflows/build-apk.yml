@@ -9,7 +9,10 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - name: Build Tsogolani Library APK
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.4
+      - name: Create Project
         run: |
           rm -rf project
           mkdir -p project/app/src/main/java/com/maseko/tsogolani
@@ -18,51 +21,23 @@ jobs:
           echo 'rootProject.name = "Tsogolani"' > project/settings.gradle
           echo "include ':app'" >> project/settings.gradle
           echo "plugins { id 'com.android.application' version '8.1.4' apply false }" > project/build.gradle
-          cat > project/app/build.gradle << 'END'
-          plugins { id 'com.android.application' }
-          android {
-            namespace 'com.maseko.tsogolani'
-            compileSdk 34
-            defaultConfig { applicationId "com.maseko.tsogolani"; minSdk 21; targetSdk 34; versionCode 16; versionName "1.0.16" }
-            buildTypes { release { minifyEnabled false } }
-            compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 }
-          }
-          dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' }
-          END
+          echo "plugins { id 'com.android.application' }" > project/app/build.gradle
+          echo "android { namespace 'com.maseko.tsogolani'; compileSdk 34; defaultConfig { applicationId \"com.maseko.tsogolani\"; minSdk 21; targetSdk 34; versionCode 16; versionName \"1.0.16\" }; buildTypes { release { minifyEnabled false } }; compileOptions { sourceCompatibility JavaVersion.VERSION_17; targetCompatibility JavaVersion.VERSION_17 } } dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' }" >> project/app/build.gradle
           echo '<manifest xmlns:android="http://schemas.android.com/apk/res/android"><application android:label="Tsogolani Library" android:theme="@android:style/Theme.NoTitleBar"><activity android:name=".MainActivity" android:exported="true"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>' > project/app/src/main/AndroidManifest.xml
           echo '<resources><string name="app_name">Tsogolani Library</string></resources>' > project/app/src/main/res/values/strings.xml
           HTML=$(ls *.html | head -n 1)
-          echo "Found HTML: $HTML"
           cp "$HTML" project/app/src/main/assets/library.html
           cp *.html project/app/src/main/assets/ || true
-          ls project/app/src/main/assets/
-          cat > project/app/src/main/java/com/maseko/tsogolani/MainActivity.kt << 'END'
-          package com.maseko.tsogolani
-          import android.app.Activity
-          import android.os.Bundle
-          import android.webkit.WebView
-          class MainActivity : Activity() {
-            override fun onCreate(b: Bundle?) {
-              super.onCreate(b)
-              val w = WebView(this)
-              w.settings.javaScriptEnabled = true
-              w.settings.allowFileAccess = true
-              w.loadUrl("file:///android_asset/library.html")
-              setContentView(w)
-            }
-          }
-          END
-      - name: Make Gradle Wrapper
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: wrapper --gradle-version 8.4
-          build-root-directory: project
-      - name: Assemble APK
+          mkdir -p project/app/src/main/java/com/maseko/tsogolani
+          printf 'package com.maseko.tsogolani\nimport android.app.Activity\nimport android.os.Bundle\nimport android.webkit.WebView\nclass MainActivity : Activity() {\n override fun onCreate(b: Bundle?) {\n super.onCreate(b)\n val w = WebView(this)\n w.settings.javaScriptEnabled = true\n w.loadUrl("file:///android_asset/library.html")\n setContentView(w)\n }\n}\n' > project/app/src/main/java/com/maseko/tsogolani/MainActivity.kt
+      - name: Build APK
         run: |
           cd project
+          gradle wrapper
           chmod +x gradlew
          ./gradlew assembleDebug
-      - uses: actions/upload-artifact@v4
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
           name: Tsogolani-APK
           path: project/app/build/outputs/apk/debug/*.apk
