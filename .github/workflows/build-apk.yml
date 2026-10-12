@@ -9,10 +9,21 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - run: unzip -o *.zip -d project
-      - run: ls -R project
-      - run: FILE=$(find project -name gradlew | head -n 1); echo Found $FILE; chmod +x $FILE; sh $FILE -p $(dirname $FILE) assembleDebug
+      - name: Unzip and Find
+        run: |
+          unzip -o *.zip -d project
+          echo "=== LIST ALL ==="
+          ls -R project | head -n 300
+          echo "=== SEARCH GRADLEW ==="
+          find project -type f | grep gradle | head -n 30
+      - name: Build APK
+        run: |
+          FILE=$(find project -type f -name gradlew | head -n 1)
+          if [ -z "$FILE" ]; then echo "ERROR gradlew not found"; exit 1; fi
+          echo "Found $FILE"
+          chmod +x $FILE
+          $FILE -p $(dirname $FILE) assembleDebug
       - uses: actions/upload-artifact@v4
         with:
           name: Tsogolani-APK
-          path: '**/*.apk'
+          path: '**/apk/debug/*.apk'
