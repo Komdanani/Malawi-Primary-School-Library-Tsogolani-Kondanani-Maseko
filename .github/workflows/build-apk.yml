@@ -7,26 +7,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: Setup Node
+          
+      - name: Setup Node 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+
       - name: Build APK from HTML
         run: |
-          ls -la *.html
           mkdir -p www
           cp -v *.html www/index.html
-          npx --yes @capacitor/cli@latest init "Tsogolani Library" "com.komdana.tsogolani" --web-dir=www
-          npm install @capacitor/core @capacitor/android
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npx cap init "Tsogolani Library" "com.komdana.tsogolani" --web-dir=www
           npx cap add android
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
