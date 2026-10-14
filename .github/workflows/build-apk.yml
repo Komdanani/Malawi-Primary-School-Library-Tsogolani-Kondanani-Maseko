@@ -7,26 +7,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
+          
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install and Build
+
+      - name: Create Android App from HTML
         run: |
-          npm install
-          npm run build || true
-          npx cap add android || true
-          npx cap sync || true
+          echo "Copying your library book..."
+          mkdir -p www
+          cp Malawi_Primary_School_Library_Book.html www/index.html
+          
+          echo '{"name":"tsogolani","appId":"com.komdana.tsogolani","webDir":"www"}' > capacitor.config.json
+          
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          
+          npx cap add android
+          npx cap sync
+          
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Tsogolani-APK
+          name: Tsogolani-Library-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
