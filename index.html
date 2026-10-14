@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Malawi Primary School Library</title>
+<link rel="manifest" href="manifest.json">
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,sans-serif;background:#f5f7ff;color:#111;padding-bottom:80px}
+header{background:#1e40af;color:white;padding:16px;position:sticky;top:0;z-index:10}
+header h1{font-size:19px}header p{font-size:12px;opacity:.9;margin-top:4px}
+.search{margin:12px 16px}.search input{width:100%;padding:12px;border-radius:12px;border:1px solid #ddd;font-size:15px}
+.filter{padding:0 16px 8px;display:flex;gap:8px;overflow-x:auto}.filter button{white-space:nowrap;padding:8px 14px;border-radius:20px;border:1px solid #cbd5e1;background:white}
+.filter button.active{background:#1e40af;color:white}
+#bookList{padding:12px 16px;display:grid;gap:12px}.card{background:white;border-radius:16px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.card h3{font-size:16px}.badge{font-size:11px;padding:4px 8px;border-radius:8px;background:#eef2ff;color:#3730a3;margin-right:6px}.badge.green{background:#dcfce7;color:#166534}.badge.gray{background:#f1f5f9;color:#64748b}
+.card p{font-size:13px;color:#475569;margin-top:6px}.offline-bar{position:fixed;bottom:0;left:0;right:0;background:#0f172a;color:white;padding:12px 16px;display:flex;justify-content:space-between;font-size:13px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+.modal.open{display:flex}.modal-box{background:white;border-radius:16px;max-width:500px;width:100%;padding:20px;max-height:80vh;overflow:auto}
+button.main{background:#1e40af;color:white;border:0;padding:10px 16px;border-radius:10px;margin-top:10px;width:100%}
+</style></head><body>
+<header><h1>📚 Malawi Primary School Library</h1><p>Tsogolani - Kondanani Maseko | Std 1-8 | Offline Forever</p></header>
+<div class="search"><input id="searchInput" placeholder="Search book, subject, standard..."></div>
+<div class="filter" id="filter">
+<button class="active" data-f="all">All</button>
+<button data-f="1">Std 1</button><button data-f="2">Std 2</button><button data-f="3">Std 3</button><button data-f="4">Std 4</button>
+<button data-f="5">Std 5</button><button data-f="6">Std 6</button><button data-f="7">Std 7</button><button data-f="8">Std 8</button>
+</div>
+<div id="bookList"></div>
+<div class="offline-bar"><span id="status">📱 Ready for offline</span><span>🇲🇼 Malawi</span></div>
+<div class="modal" id="modal"><div class="modal-box" id="modalBox"></div></div>
+<script>
+let books=[];
+async function load(){
+ try{let r=await fetch('books.json');books=await r.json();}catch(e){
+ books=[
+ {id:1,standard:1,subject:"Chichewa (Tsogolani)",title:"Std 1: Chichewa - Tsogolani",file:"",status:"available",description:"Kondanani Maseko"},
+ {id:2,standard:1,subject:"English",title:"Std 1: English",file:"",status:"available",description:"English Std 1"},
+ {id:5,standard:2,subject:"Chichewa (Tsogolani)",title:"Std 2: Chichewa",file:"",status:"available",description:"Tsogolani Std 2"},
+ {id:12,standard:4,subject:"Mathematics",title:"Std 4: Mathematics",file:"",status:"coming_soon",description:"Maths Std 4"},
+ {id:16,standard:8,subject:"Mathematics",title:"Std 8: Mathematics - PSLCE",file:"",status:"coming_soon",description:"PSLCE"}
+ ];}
+ render(books);
+}
+function render(list){
+ let html="";list.forEach(b=>{
+ html+=`<div class="card"><h3>${b.title}</h3><div style="margin-top:6px"><span class="badge">Std ${b.standard}</span><span class="badge ${b.status=='available'?'green':'gray'}">${b.status}</span><span class="badge">${b.subject}</span></div><p>${b.description}</p><button class="main" onclick="openBook(${b.id})">${b.status=='available'?'📖 Open':'⏳ Coming Soon'}</button></div>`;
+ });document.getElementById('bookList').innerHTML=html||"<p style='padding:20px'>No books found</p>";
+}
+function openBook(id){
+ let b=books.find(x=>x.id==id);
+ document.getElementById('modalBox').innerHTML=`<h3>${b.title}</h3><p>Standard ${
