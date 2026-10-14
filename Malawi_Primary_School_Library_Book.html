@@ -1,38 +1,36 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tsogolani Library - K. Maseko</title>
-<style>
-body{font-family:sans-serif; padding:20px; background:#f5f5ff}
-h1{color:#3F51B5; text-align:center}
-.book{background:white; margin:10px; padding:15px; border-radius:10px; box-shadow:0 2px 5px #ccc}
-.level{color:green; font-weight:bold}
-</style>
-</head>
-<body>
-<h1>📚 Malawi Primary School Library</h1>
-<h2 style="text-align:center">Tsogolani - Kondanani Maseko</h2>
-
-<div class="book"><h3>Standard 1-2: Tsogolani - Let's Read Together</h3><p class="level">Chichewa & English</p><p>Basic reading, alphabets, stories for beginners.</p></div>
-
-<div class="book"><h3>Standard 3: Moyo ndi Maphunziro</h3><p class="level">Life Skills</p><p>Health, hygiene, moral education for Malawi learners.</p></div>
-
-<div class="book"><h3>Standard 4: Kuwerenga ndi Kulemba</h3><p class="level">Chichewa</p><p>Reading and writing improvement.</p></div>
-
-<div class="book"><h3>Standard 5: Chichewa Grammar</h3><p class="level">Language</p><p>Grammar, composition, comprehension.</p></div>
-
-<div class="book"><h3>Standard 6: English for Malawi Primary</h3><p class="level">English</p><p>English grammar and stories aligned to MANEB.</p></div>
-
-<div class="book"><h3>Standard 7: Mathematics - Masamu</h3><p class="level">Mathematics</p><p>Numbers, operations, geometry for Standard 7.</p></div>
-
-<div class="book"><h3>Standard 8: Science & Agriculture</h3><p class="level">Science</p><p>Prepares for PSLCE - Science, environment, farming.</p></div>
-
-<div class="book"><h3>Social Studies - Mbiri ya Malawi</h3><p class="level">All Levels</p><p>History of Malawi, culture, geography.</p></div>
-
-<div class="book"><h3>Teacher Guide</h3><p class="level">K. Maseko</p><p>How to use Tsogolani Library in class.</p></div>
-
-<p style="text-align:center; margin-top:30px"><b>Version 16 - Lilongwe, Malawi 2026</b></p>
-</body>
-</html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Malawi Primary School Library</title>
+<link rel="manifest" href="manifest.json">
+<style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:system-ui,sans-serif;background:#f5f7ff;color:#111;padding-bottom:80px}
+header{background:#1e40af;color:white;padding:16px;position:sticky;top:0;z-index:10}
+header h1{font-size:19px}header p{font-size:12px;opacity:.9;margin-top:4px}
+.search{margin:12px 16px}.search input{width:100%;padding:12px;border-radius:12px;border:1px solid #ddd;font-size:15px}
+.filter{padding:0 16px 8px;display:flex;gap:8px;overflow-x:auto}.filter button{white-space:nowrap;padding:8px 14px;border-radius:20px;border:1px solid #cbd5e1;background:white}
+.filter button.active{background:#1e40af;color:white}
+#bookList{padding:12px 16px;display:grid;gap:12px}.card{background:white;border-radius:16px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.card h3{font-size:16px}.badge{font-size:11px;padding:4px 8px;border-radius:8px;background:#eef2ff;color:#3730a3;margin-right:6px}
+.badge.green{background:#dcfce7;color:#166534}.badge.gray{background:#f1f5f9;color:#64748b}
+.card p{font-size:13px;color:#475569;margin-top:6px}.offline-bar{position:fixed;bottom:0;left:0;right:0;background:#0f172a;color:white;padding:12px 16px;display:flex;justify-content:space-between;font-size:13px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;padding:16px;z-index:20}
+.modal.open{display:flex}.modal-box{background:white;border-radius:16px;max-width:500px;width:100%;padding:20px;max-height:80vh;overflow:auto}
+</style></head><body>
+<header><h1>📚 Malawi Primary School Library</h1><p>Tsogolani - Kondanani Maseko | Std 1-8 | Offline Forever</p></header>
+<div class="search"><input id="searchInput" placeholder="Search Mathematics, Chichewa, Standard 5..."></div>
+<div class="filter" id="filterBar"></div><div id="bookList"></div>
+<div class="offline-bar"><span>✅ Offline Ready - Add Books Forever</span><span id="bookCount"></span></div>
+<div class="modal" id="modal"><div class="modal-box" id="modalBox"></div></div>
+<script>
+let allBooks=[], currentFilter='All';
+async function loadBooks(){try{const r=await fetch('books.json?v='+Date.now());allBooks=await r.json();}catch(e){document.getElementById('bookList').innerHTML='<p style=padding:20px>Connect internet first time to load library</p>';return;}renderFilters();renderBooks(allBooks);}
+function renderFilters(){const stds=['All','Std 1','Std 2','Std 3','Std 4','Std 5','Std 6','Std 7','Std 8'];document.getElementById('filterBar').innerHTML=stds.map(s=>`<button class="${currentFilter===s?'active':''}" onclick="setFilter('${s}')">${s}</button>`).join('');}
+function setFilter(f){currentFilter=f;renderFilters();applySearch();}
+function applySearch(){const q=document.getElementById('searchInput').value.toLowerCase();let filtered=allBooks;if(currentFilter!=='All'){const num=currentFilter.replace('Std ','');filtered=filtered.filter(b=>String(b.standard)===num);}if(q){filtered=filtered.filter(b=>(b.title+b.subject+b.description).toLowerCase().includes(q));}renderBooks(filtered);}
+function renderBooks(list){document.getElementById('bookCount').textContent=list.length+' books';const c=document.getElementById('bookList');if(!list.length){c.innerHTML='<p style=padding:20px>No books</p>';return;}c.innerHTML=list.map(b=>{const av=b.status==='available';return `<div class="card" onclick="openBook(${b.id})"><h3>Std ${b.standard}: ${b.subject}</h3><div style="margin-top:6px"><span class="badge">Std ${b.standard}</span><span class="badge ${av?'green':'gray'}">${av?'✅ Available':'⏳ Coming Soon'}</span></div><p>${b.description}</p><p style="margin-top:8px;color:#1e40af;font-weight:600;font-size:12px">${av?'📖 Tap to Read':'📥 Tap to add this book'}</p></div>`;}).join('');}
+function openBook(id){const b=allBooks.find(x=>x.id===id);const box=document.getElementById('modalBox');const modal=document.getElementById('modal');if(b.status!=='available'){box.innerHTML=`<h2>Add: ${b.title}</h2><p style="margin:12px 0">To add this book forever:</p><ol style="padding-left:18px;line-height:1.7;font-size:14px"><li>Upload PDF as <code>${b.file.split('/').pop()}</code> to <code>books/</code> folder in GitHub</li><li>Edit <code>books.json</code> and change status to "available"</li><li>Push - done!</li></ol><button onclick="closeModal()" style="margin-top:14px;width:100%;padding:12px;border-radius:10px;border:none;background:#1e40af;color:white">Close</button>`;}else{box.innerHTML=`<h2>${b.title}</h2><p style="margin:8px 0">${b.description}</p><div style="margin:12px 0;padding:12px;background:#f8fafc;border-radius:10px"><p><b>Tsogolani Sample:</b><br>Moni! Ndine Kondanani.<br>A a - Apulo<br>B b - Boti</p><p style="margin-top:8px"><a href="${b.file}" target="_blank" style="color:#1e40af">Open PDF</a></p></div><button onclick="closeModal()" style="margin-top:8px;width:100%;padding:12px;border-radius:10px;border:none;background:#1e40af;color:white">Close</button>`;}modal.classList.add('open');}
+function closeModal(){document.getElementById('modal').classList.remove('open');}
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')closeModal();});
+document.getElementById('searchInput').addEventListener('input',applySearch);
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
+loadBooks();
+</script></body></html>
